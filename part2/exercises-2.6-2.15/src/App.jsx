@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import phonebookService from './services/phonebook'
 import SearchFilter from './components/SearchFilter'
 import PhonebookForm from './components/PhonebookForm'
 import Persons from './components/Persons'
@@ -23,17 +23,11 @@ const App = () => {
     setFilter(event.target.value)
   }
 
-  // Fetch initial data from server
+  // Getting initial data from server
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then((response) => {
-        setPersons(response.data)
-        //console.log(response.data)
-      })
-      // .catch((error) => {
-      //   console.error('Failed to fetch persons:', error)
-      // })
+    phonebookService.getAll().then((initialPersons) => {
+      setPersons(initialPersons)
+    })
   }, [])
 
   // Add a new person to the phonebook
@@ -46,15 +40,29 @@ const App = () => {
   }
   // Create the new person without id and save to server
   const personObject = { name: newName, number: newNumber }
-
-  axios
-    .post('http://localhost:3001/persons', personObject)
-    .then((response) => {
-      // response.data contains the saved person with id assigned by server
-      setPersons((prev) => prev.concat(response.data))
+  console.log('Person added to server', personObject)
+  phonebookService
+    .create(personObject)
+    .then((savedPerson) => {
+      setPersons((x) => x.concat(savedPerson))
       setNewName('')
       setNewNumber('')
     })
+  }
+
+  // Delete a person from the phonebook
+  const handleDeletePerson = (id, name) => {
+    if (!window.confirm(`Delete ${name} ?`)) return
+
+    phonebookService
+      .remove(id)
+      .then(() => {
+        setPersons((x) => x.filter((p) => p.id !== id))
+      })
+      .catch((error) => {
+        console.error('Failed to delete person:', error)
+        setPersons((x) => x.filter((p) => p.id !== id))
+      })
   }
   // Filter persons to show based on the filter input and using toLowerCase() for case insensitivity
   const personsToShow = persons.filter((x) => x.name.toLowerCase().includes(filter.toLowerCase()))
@@ -73,7 +81,7 @@ const App = () => {
           onNumberChange={handleNumberChange}
         />
         <h2>Numbers</h2>
-        <Persons persons={personsToShow} />
+        <Persons persons={personsToShow} onDelete={handleDeletePerson} />
 
       {/*<div>Debugging: {newName} {newNumber}</div>*/}
 

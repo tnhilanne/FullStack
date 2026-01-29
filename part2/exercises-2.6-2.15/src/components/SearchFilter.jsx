@@ -1,5 +1,5 @@
-
 // Component for filtering persons by name
+
 const SearhFilter = ({ filter, onFilterChange }) => {
   return (
     <div>

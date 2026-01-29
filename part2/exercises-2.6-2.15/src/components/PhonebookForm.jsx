@@ -1,5 +1,5 @@
-
 //  Component for the form to add a new person to the phonebook, handling name and number inputs
+
 const PhonebookForm = ({ onSubmit, newName, onNameChange, newNumber, onNumberChange }) => {
   return (
     <form onSubmit={onSubmit}>
@@ -10,7 +10,7 @@ const PhonebookForm = ({ onSubmit, newName, onNameChange, newNumber, onNumberCha
         Number: <input value={newNumber} onChange={onNumberChange} />
       </div>
       <div>
-        <button type="submit">add</button>
+        <button type="submit">Add</button>
       </div>
     </form>
   )

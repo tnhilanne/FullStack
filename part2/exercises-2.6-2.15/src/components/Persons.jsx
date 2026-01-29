@@ -1,10 +1,12 @@
+// Component to display the list of persons with delete buttons, and event handler for deletion
 
-// Component to display the list of persons
-const Persons = ({ persons }) => {
+const Persons = ({ persons, onDelete }) => {
   return (
     <div>
       {persons.map((person) => (
-        <div key={person.id}>{person.name} {person.number}</div>
+        <div key={person.id}>
+          {person.name} {person.number} <button onClick={() => onDelete(person.id, person.name)}>Delete</button>
+        </div>
       ))}
     </div>
   )
