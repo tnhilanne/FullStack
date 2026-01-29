@@ -3,12 +3,14 @@ import phonebookService from './services/phonebook'
 import SearchFilter from './components/SearchFilter'
 import PhonebookForm from './components/PhonebookForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState(null)
 
   //event handler for name input 
   const handleNameChange = (event) => {
@@ -41,14 +43,19 @@ const App = () => {
         const updatedPerson = { ...existingPerson, number: newNumber }
         phonebookService
           .update(existingPerson.id, updatedPerson)
-          .then((returnedPerson) => {
-            setPersons((x) => x.map((p) => (p.id !== existingPerson.id ? p : returnedPerson)))
-            setNewName('')
-            setNewNumber('')
-          })
+            .then((returnedPerson) => {
+              setPersons((x) => x.map((p) => (p.id !== existingPerson.id ? p : returnedPerson)))
+                setNewName('')
+                setNewNumber('')
+                setNotification({ message: `Updated number for ${returnedPerson.name}`, type: 'success' })
+                setTimeout(() => setNotification(null), 3000)
+            })
+            // Handle error if person to update is not found on server, notify user
           .catch((error) => {
             console.error('Failed to update person:', error)
             setPersons((x) => x.filter((p) => p.id !== existingPerson.id))
+            setNotification({ message: `Information of ${existingPerson.name} has already been removed from server`, type: 'error' })
+            setTimeout(() => setNotification(null), 3000)
           })
       }
       return
@@ -63,6 +70,8 @@ const App = () => {
         setPersons((x) => x.concat(savedPerson))
         setNewName('')
         setNewNumber('')
+        setNotification({ message: `Added ${savedPerson.name}`, type: 'success' })
+        setTimeout(() => setNotification(null), 3000)
       })
   }
 
@@ -75,9 +84,11 @@ const App = () => {
       .then(() => {
         setPersons((x) => x.filter((p) => p.id !== id))
       })
-      .catch((error) => {
+        .catch((error) => {
         console.error('Failed to delete person:', error)
         setPersons((x) => x.filter((p) => p.id !== id))
+        setNotification({ message: `Information of ${name} has already been removed from server`, type: 'error' })
+        setTimeout(() => setNotification(null), 3000)
       })
   }
   // Filter persons to show based on the filter input and using toLowerCase() for case insensitivity
@@ -87,6 +98,7 @@ const App = () => {
   return (
       <div>
         <h2>Phonebook</h2>
+        <Notification message={notification?.message} type={notification?.type} />
         <SearchFilter filter={filter} onFilterChange={handleFilterChange} />
         <h2>Add new person</h2>
         <PhonebookForm
