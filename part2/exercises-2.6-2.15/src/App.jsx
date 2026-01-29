@@ -44,14 +44,17 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
       return
   }
-  // return the next id for a new person: if there are existing persons find the largest id and add 1, otherwise return 1
-  const newId = persons.length > 0 ? Math.max(...persons.map((x) => x.id)) + 1 : 1
+  // Create the new person without id and save to server
+  const personObject = { name: newName, number: newNumber }
 
-  // Creating a new person object and updating the state
-  const personObject = { name: newName, number: newNumber, id: newId }
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')
+  axios
+    .post('http://localhost:3001/persons', personObject)
+    .then((response) => {
+      // response.data contains the saved person with id assigned by server
+      setPersons((prev) => prev.concat(response.data))
+      setNewName('')
+      setNewNumber('')
+    })
   }
   // Filter persons to show based on the filter input and using toLowerCase() for case insensitivity
   const personsToShow = persons.filter((x) => x.name.toLowerCase().includes(filter.toLowerCase()))
