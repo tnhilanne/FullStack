@@ -33,21 +33,37 @@ const App = () => {
   // Add a new person to the phonebook
   const addPerson = (event) => {
     event.preventDefault()
-    // Prevented adding duplicate names to the phonebook by using the some() method
-    if (persons.some((x) => x.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+    // If name already exists, ask to replace number
+    const existingPerson = persons.find((p) => p.name === newName)
+
+    if (existingPerson) {
+      if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
+        const updatedPerson = { ...existingPerson, number: newNumber }
+        phonebookService
+          .update(existingPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons((x) => x.map((p) => (p.id !== existingPerson.id ? p : returnedPerson)))
+            setNewName('')
+            setNewNumber('')
+          })
+          .catch((error) => {
+            console.error('Failed to update person:', error)
+            setPersons((x) => x.filter((p) => p.id !== existingPerson.id))
+          })
+      }
       return
-  }
-  // Create the new person without id and save to server
-  const personObject = { name: newName, number: newNumber }
-  console.log('Person added to server', personObject)
-  phonebookService
-    .create(personObject)
-    .then((savedPerson) => {
-      setPersons((x) => x.concat(savedPerson))
-      setNewName('')
-      setNewNumber('')
-    })
+    }
+
+    // Create the new person without id and save to server
+    const personObject = { name: newName, number: newNumber }
+    console.log('Person added to server', personObject)
+    phonebookService
+      .create(personObject)
+      .then((savedPerson) => {
+        setPersons((x) => x.concat(savedPerson))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   // Delete a person from the phonebook
