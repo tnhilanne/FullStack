@@ -1,15 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import SearchFilter from './components/SearchFilter'
 import PhonebookForm from './components/PhonebookForm'
 import Persons from './components/Persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Tammi Tamminen', number: '050-666666', id: 1 },
-    { name: 'Kuusi Kuusisto', number: '12-34-5432', id: 2 },
-    { name: 'Koivu Koivula', number: '98-4543222', id: 3 },
-    { name: 'Järvi Järvinen', number: '22-543210', id: 4 }
-  ]) 
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
@@ -26,6 +22,19 @@ const App = () => {
   const handleFilterChange = (event) => {
     setFilter(event.target.value)
   }
+
+  // Fetch initial data from server
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then((response) => {
+        setPersons(response.data)
+        //console.log(response.data)
+      })
+      // .catch((error) => {
+      //   console.error('Failed to fetch persons:', error)
+      // })
+  }, [])
 
   // Add a new person to the phonebook
   const addPerson = (event) => {
