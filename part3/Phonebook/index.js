@@ -3,6 +3,10 @@ const app = express()
 const morgan = require('morgan')
 
 app.use(express.json())
+
+// Serve static files from the 'dist' directory for frontend  build
+app.use(express.static('dist'))
+
 // app.use(morgan('tiny'))
 
 // Custom token to log the body of POST requests
@@ -109,7 +113,7 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end()
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001 // Use environment variable PORT or default to 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
