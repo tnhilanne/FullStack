@@ -112,6 +112,31 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
+// Update person's information only if the provided name already exists in DB
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number } = request.body
+
+  // Check that the name exists somewhere in the phonebook
+  Person.findOne({ name })
+    .then(found => {
+      // Update the person if name exists
+      return Person.findById(request.params.id)
+        .then(person => {
+          if (!person) {
+            return response.status(404).end()
+          }
+          
+          person.name = name
+          person.number = number
+
+          return person.save().then((updatedPerson) => {
+            response.json(updatedPerson)
+          })
+        })
+    })
+    .catch(error => next(error))
+})
+
 // Error handling middleware
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
