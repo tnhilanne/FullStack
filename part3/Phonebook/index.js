@@ -48,6 +48,35 @@ app.get('/api/persons/:id', (request, response) => {
   }
 })
 
+// Generate an id for a new person added to the phonebook
+const generateId = () => {
+  // Use a large range random number to avoid duplicates
+  const randomId = Math.floor(Math.random() * 1000000000)
+  return String(randomId)
+}
+
+// Using post to add a new person to the phonebook
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+
+  // return error if name or number is missing
+  if (!body.name || !body.number) {
+    return response.status(400).json({ 
+      error: 'name or number missing' 
+    })
+  }
+
+  const person = {
+    id: generateId(),
+    name: body.name,
+    number: body.number,
+  }
+
+  persons = persons.concat(person)
+
+  response.json(person)
+})
+
 // Info page showing number of people in the phonebook and the current time and date
 app.get('/info', (request, response) => {
   const count = persons.length
