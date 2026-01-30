@@ -4,10 +4,9 @@ const app = express()
 const morgan = require('morgan')
 const Person = require('./models/person')
 
-app.use(express.json())
-
 // Serve static files from the 'dist' directory for frontend  build
 app.use(express.static('dist'))
+app.use(express.json())
 
 // app.use(morgan('tiny'))
 
@@ -108,11 +107,12 @@ app.get('/info', (request, response) => {
 })
 
 // Delete a person by id
-app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  persons = persons.filter(person => person.id !== id)
-    //console.log(request.headers)
-  response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 // Use the PORT environment variable
