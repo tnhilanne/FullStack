@@ -16,7 +16,7 @@ mongoose.set('strictQuery',false)
 
 mongoose.connect(url, { family: 4 })
   .then(result => {
-    console.log('connected to MongoDB')
+    console.log('connected to MongoDB', result.connection.name)
   })
   .catch(error => {
     console.log('error connecting to MongoDB:', error.message)
@@ -73,7 +73,7 @@ personSchema.set('toJSON', {
 // Person.find({}).then(result => {
 //   result.forEach(person => {
 //     console.log(person)
-//   }) 
+//   })
 //   mongoose.connection.close()
 // })
 // }
@@ -82,7 +82,7 @@ personSchema.set('toJSON', {
 
 // if (name && number) {
 // person.save().then(result => {
-//   console.log('added', name, 'number', number, 'to phonebook') 
+//   console.log('added', name, 'number', number, 'to phonebook')
 //   mongoose.connection.close()
 // })
 // }

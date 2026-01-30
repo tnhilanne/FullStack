@@ -31,7 +31,7 @@
 // Person.find({}).then(result => {
 //   result.forEach(person => {
 //     console.log(person)
-//   }) 
+//   })
 //   mongoose.connection.close()
 // })
 // }
@@ -39,7 +39,7 @@
 // //if both name and number provided, add new entry to phonebook
 // if (name && number) {
 // person.save().then(result => {
-//   console.log('added', name, 'number', number, 'to phonebook') 
+//   console.log('added', name, 'number', number, 'to phonebook')
 //   mongoose.connection.close()
 // })
 // }

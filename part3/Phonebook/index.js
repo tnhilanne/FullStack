@@ -11,32 +11,8 @@ app.use(express.json())
 // app.use(morgan('tiny'))
 
 // Custom token to log the body of POST requests
-morgan.token('body', (req, res) => req.method === 'POST' ? JSON.stringify(req.body) : '')
+morgan.token('body', (req) => req.method === 'POST' ? JSON.stringify(req.body) : '')
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-
-let persons = [
-    { 
-      id: "1",
-      name: "Arto Hellas", 
-      number: "040-123456"
-    },
-    { 
-      id: "2",
-      name: "Ada Lovelace", 
-      number: "39-44-5323523"
-    },
-    { 
-      id: "3",
-      name: "Dan Abramov", 
-      number: "12-43-234345"
-    },
-    { 
-      id: "4",
-      name: "Mary Poppendieck", 
-      number: "39-23-6423122"
-    }
-]
-
 
 // Return all phonebook entries from the database
 app.get('/api/persons', (request, response, next) => {
@@ -54,7 +30,7 @@ app.get('/api/persons/:id', (request, response, next) => {
     .then(person => {
       if (!person) {
         return response.status(404).end()
-    
+
       }
       response.json(person)
     })
@@ -62,11 +38,11 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 // Generate an id for a new person added to the phonebook
-const generateId = () => {
-  // Use a large range random number to avoid duplicates
-  const randomId = Math.floor(Math.random() * 1000000000)
-  return String(randomId)
-}
+// const generateId = () => {
+//   // Use a large range random number to avoid duplicates
+//   const randomId = Math.floor(Math.random() * 1000000000)
+//   return String(randomId)
+// }
 
 // Using post to add a new person to the phonebook
 app.post('/api/persons', (request, response, next) => {
@@ -81,12 +57,12 @@ app.post('/api/persons', (request, response, next) => {
     .then(savedPerson => {
       response.json(savedPerson)
     })
-  .catch(error => {
-    console.log(error.message)
-    next(error)
+    .catch(error => {
+      console.log(error.message)
+      next(error)
     })
-  })
-  
+})
+
 
 // Info page showing number of people in the phonebook and the current time and date
 app.get('/info', (request, response, next) => {
@@ -104,7 +80,8 @@ app.get('/info', (request, response, next) => {
 // Delete a person by id
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
+
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -116,14 +93,15 @@ app.put('/api/persons/:id', (request, response, next) => {
 
   // Check that the name exists somewhere in the phonebook
   Person.findOne({ name })
-    .then(found => {
+    .then(() => {
+
       // Update the person if name exists
       return Person.findById(request.params.id)
         .then(person => {
           if (!person) {
             return response.status(404).end()
           }
-          
+
           person.name = name
           person.number = number
 
@@ -141,7 +119,7 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }
   if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
