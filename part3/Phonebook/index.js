@@ -59,10 +59,18 @@ const generateId = () => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  // return error if name or number is missing
+  // return error if name or number is missing, tested with add_person.rest
   if (!body.name || !body.number) {
     return response.status(400).json({ 
-      error: 'name or number missing' 
+      error: 'Name or number is missing' 
+    })
+  }
+
+  // return error if name already exists in phonebook, tested with add_person.rest
+  const nameExists = persons.some(p => p.name === body.name)
+  if (nameExists) {
+    return response.status(400).json({
+      error: 'Name must be unique'
     })
   }
 
