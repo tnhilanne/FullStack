@@ -39,7 +39,7 @@ app.get('/api/persons', (request, response) => {
 app.get('/api/persons/:id', (request, response) => {
   const id = request.params.id
   const person = persons.find(p => p.id === id)
-  
+
  // return not found status if it does not exist
   if (person) {
     response.json(person)
@@ -56,6 +56,14 @@ app.get('/info', (request, response) => {
     `<p>Phonebook has info for ${count} people</p>` +
     `<p>${currentTime}</p>`
   )
+})
+
+// Delete a person by id
+app.delete('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  persons = persons.filter(person => person.id !== id)
+    //console.log(request.headers)
+  response.status(204).end()
 })
 
 const PORT = 3001
