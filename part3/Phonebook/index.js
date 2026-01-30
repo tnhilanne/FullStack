@@ -1,7 +1,13 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 
 app.use(express.json())
+// app.use(morgan('tiny'))
+
+// Custom token to log the body of POST requests
+morgan.token('body', (req, res) => req.method === 'POST' ? JSON.stringify(req.body) : '')
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
     { 
