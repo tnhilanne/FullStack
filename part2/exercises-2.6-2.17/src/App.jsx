@@ -53,9 +53,13 @@ const App = () => {
             // Handle error if person to update is not found on server, notify user
           .catch((error) => {
             console.error('Failed to update person:', error)
-            setPersons((x) => x.filter((p) => p.id !== existingPerson.id))
-            setNotification({ message: `Information of ${existingPerson.name} has already been removed from server`, type: 'error' })
-            setTimeout(() => setNotification(null), 3000)
+            const msg = (error && (error.error || error.message)) || `Information of ${existingPerson.name} has already been removed from server`
+            // Only remove from local state if it's a 404-type error (no error.error means network/404)
+            if (!error || (!error.error && !error.message)) {
+              setPersons((x) => x.filter((p) => p.id !== existingPerson.id))
+            }
+            setNotification({ message: msg, type: 'error' })
+            setTimeout(() => setNotification(null), 5000)
           })
       }
       return
@@ -71,7 +75,13 @@ const App = () => {
         setNewName('')
         setNewNumber('')
         setNotification({ message: `Added ${savedPerson.name}`, type: 'success' })
-        setTimeout(() => setNotification(null), 3000)
+        setTimeout(() => setNotification(null), 5000)
+      })
+      .catch((error) => {
+        console.error('Failed to create person:', error)
+        const msg = (error && (error.error || error.message)) || 'Server error'
+        setNotification({ message: msg, type: 'error' })
+        setTimeout(() => setNotification(null), 5000)
       })
   }
 

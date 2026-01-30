@@ -9,7 +9,13 @@ const getAll = () => {
 
 // Post a new person to the server
 const create = (newPerson) => {
-  return axios.post(baseUrl, newPerson).then((response) => response.data)
+  return axios.post(baseUrl, newPerson)
+    .then((response) => response.data)
+    .catch(err => {
+      //Rethrow error details from server if available, so they can be handled in App.jsx
+      if (err.response && err.response.data) throw err.response.data
+      throw err
+    })
 }
 
 // Delete a person by id
@@ -19,7 +25,13 @@ const remove = (id) => {
 
 // Update a person's information by using PUT
 const update = (id, updatedPerson) => {
-  return axios.put(`${baseUrl}/${id}`, updatedPerson).then((response) => response.data)
+  return axios.put(`${baseUrl}/${id}`, updatedPerson)
+    .then((response) => response.data)
+    .catch(err => {
+      //Rethrow error details from server if available, so they can be handled in App.jsx
+      if (err.response && err.response.data) throw err.response.data
+      throw err
+    })
 }
 
 export default { getAll, create, remove, update }

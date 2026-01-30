@@ -72,12 +72,6 @@ const generateId = () => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: 'Name or number is missing'
-    })
-  }
-
   const person = new Person({
     name: body.name,
     number: body.number,
@@ -87,8 +81,12 @@ app.post('/api/persons', (request, response, next) => {
     .then(savedPerson => {
       response.json(savedPerson)
     })
-    .catch(next)
-})
+  .catch(error => {
+    console.log(error.message)
+    next(error)
+    })
+  })
+  
 
 // Info page showing number of people in the phonebook and the current time and date
 app.get('/info', (request, response, next) => {
@@ -139,11 +137,14 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 // Error handling middleware
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
+  //console.error(error.message)
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } 
+  if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }

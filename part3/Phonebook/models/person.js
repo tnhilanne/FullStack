@@ -22,16 +22,25 @@ mongoose.connect(url, { family: 4 })
     console.log('error connecting to MongoDB:', error.message)
   })
 
+// Define the schema for a person, validating name and number fields
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minlength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    minlength: 8,
+    required: true
+  }
 })
 
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
-    returnedObject.name = returnedObject.name.toString()
-    returnedObject.number = returnedObject.number.toString()
+    // returnedObject.name = returnedObject.name.toString()
+    // returnedObject.number = returnedObject.number.toString()
     delete returnedObject._id
     delete returnedObject.__v
   }
