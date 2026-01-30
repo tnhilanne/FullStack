@@ -35,6 +35,19 @@ app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
 
+// Return a single phonebook entry by id
+app.get('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  const person = persons.find(p => p.id === id)
+  
+ // return not found status if it does not exist
+  if (person) {
+    response.json(person)
+  } else {
+    response.status(404).end()
+  }
+})
+
 // Info page showing number of people in the phonebook and the current time and date
 app.get('/info', (request, response) => {
   const count = persons.length
