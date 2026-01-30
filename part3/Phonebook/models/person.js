@@ -32,7 +32,22 @@ const personSchema = new mongoose.Schema({
   number: {
     type: String,
     minlength: 8,
-    required: true
+    required: true,
+    validate: {
+      validator: function(v) {
+        if (!v) return false
+        // the number must contain exactly one hyphen separating two parts
+        const parts = v.split('-')
+        if (parts.length !== 2) return false
+        const [first, second] = parts
+        // first part must be 2 or 3 digits
+        if (!/^\d{2,3}$/.test(first)) return false
+        // second part must consist only of digits
+        if (!/^\d+$/.test(second)) return false
+        return true
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    }
   }
 })
 
