@@ -39,23 +39,26 @@ let persons = [
 
 
 // Return all phonebook entries from the database
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
   Person.find({})
     .then(personsFromDb => {
       response.json(personsFromDb)
       //console.log('Fetched persons from database:', personsFromDb)
     })
-    .catch(err => {
-      console.error('Error fetching persons from DB:', err.message)
-      response.status(500).end()
-    })
+    .catch(next)
 })
 
 // Return a single phonebook entry by id
-app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then(person => {
-    response.json(person)
-  })
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      if (!person) {
+        return response.status(404).end()
+    
+      }
+      response.json(person)
+    })
+    .catch(next)
 })
 
 // Generate an id for a new person added to the phonebook
@@ -66,7 +69,7 @@ const generateId = () => {
 }
 
 // Using post to add a new person to the phonebook
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (!body.name || !body.number) {
@@ -84,14 +87,11 @@ app.post('/api/persons', (request, response) => {
     .then(savedPerson => {
       response.json(savedPerson)
     })
-    .catch(err => {
-      console.error('Error saving person:', err.message)
-      response.status(500).json({ error: err.message })
-    })
+    .catch(next)
 })
 
 // Info page showing number of people in the phonebook and the current time and date
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   Person.countDocuments({})
     .then(count => {
       const currentTime = new Date()
@@ -100,10 +100,7 @@ app.get('/info', (request, response) => {
         `<p>${currentTime}</p>`
       )
     })
-    .catch(err => {
-      console.error('Error counting persons:', err.message)
-      response.status(500).end()
-    })
+    .catch(next)
 })
 
 // Delete a person by id
@@ -114,6 +111,20 @@ app.delete('/api/persons/:id', (request, response, next) => {
     })
     .catch(error => next(error))
 })
+
+// Error handling middleware
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler)
 
 // Use the PORT environment variable
 const PORT = process.env.PORT
