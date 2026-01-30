@@ -70,30 +70,25 @@ const generateId = () => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  // return error if name or number is missing, tested with add_person.rest
   if (!body.name || !body.number) {
-    return response.status(400).json({ 
-      error: 'Name or number is missing' 
-    })
-  }
-
-  // return error if name already exists in phonebook, tested with add_person.rest
-  const nameExists = persons.some(p => p.name === body.name)
-  if (nameExists) {
     return response.status(400).json({
-      error: 'Name must be unique'
+      error: 'Name or number is missing'
     })
   }
 
-  const person = {
-    id: generateId(),
+  const person = new Person({
     name: body.name,
     number: body.number,
-  }
+  })
 
-  persons = persons.concat(person)
-
-  response.json(person)
+  person.save()
+    .then(savedPerson => {
+      response.json(savedPerson)
+    })
+    .catch(err => {
+      console.error('Error saving person:', err.message)
+      response.status(500).json({ error: err.message })
+    })
 })
 
 // Info page showing number of people in the phonebook and the current time and date

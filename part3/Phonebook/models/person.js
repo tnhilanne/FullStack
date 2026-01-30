@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 
-if (process.argv.length < 3) {
-  console.log('give password as argument')
-  process.exit(1)
-}
+// if (process.argv.length < 3) {
+//   console.log('give password as argument')
+//   process.exit(1)
+// }
 
-const password = process.argv[2]
-const name = process.argv[3]
-const number = process.argv[4]
+// const password = process.argv[2]
+// const name = process.argv[3]
+// const number = process.argv[4]
 
 // Use the connection string from environment variable for better security
 const url = process.env.MONGODB_URI
@@ -35,11 +35,11 @@ personSchema.set('toJSON', {
   }
 })
 
-const Person = mongoose.model('Person', personSchema)
-const person = new Person({
-  name: name,
-  number: number,
-})
+// const Person = mongoose.model('Person', personSchema)
+// const person = new Person({
+//   name: name,
+//   number: number,
+// })
 
 //if no name or number provided, print all entries in phonebook
 
