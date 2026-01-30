@@ -5,3 +5,13 @@ Content-Type: application/json
   "name": "New test person",
   "number": "666-555444"
 }
+
+###
+
+POST https://fullstack-part-3-cszk.onrender.com/api/persons/
+Content-Type: application/json
+
+{
+  "name": "New test person",
+  "number": "777-333222"
+}
