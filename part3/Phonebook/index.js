@@ -44,7 +44,7 @@ app.get('/api/persons', (request, response) => {
   Person.find({})
     .then(personsFromDb => {
       response.json(personsFromDb)
-      console.log('Fetched persons from database:', personsFromDb)
+      //console.log('Fetched persons from database:', personsFromDb)
     })
     .catch(err => {
       console.error('Error fetching persons from DB:', err.message)
