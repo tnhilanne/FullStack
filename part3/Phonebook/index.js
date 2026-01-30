@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const Person = require('./models/person')
 
 app.use(express.json())
 
@@ -36,26 +38,25 @@ let persons = [
     }
 ]
 
-// app.get('/', (request, response) => {
-//   response.send('<h1>Hello Phonebook!</h1>')
-// })
 
-// Return hardcoded list of phonebook entries from http://localhost:3001/api/persons
+// Return all phonebook entries from the database
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  Person.find({})
+    .then(personsFromDb => {
+      response.json(personsFromDb)
+      console.log('Fetched persons from database:', personsFromDb)
+    })
+    .catch(err => {
+      console.error('Error fetching persons from DB:', err.message)
+      response.status(500).end()
+    })
 })
 
 // Return a single phonebook entry by id
 app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  const person = persons.find(p => p.id === id)
-
- // return not found status if it does not exist
-  if (person) {
+  Person.findById(request.params.id).then(person => {
     response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  })
 })
 
 // Generate an id for a new person added to the phonebook
@@ -97,12 +98,18 @@ app.post('/api/persons', (request, response) => {
 
 // Info page showing number of people in the phonebook and the current time and date
 app.get('/info', (request, response) => {
-  const count = persons.length
-  const currentTime = new Date()
-  response.send(
-    `<p>Phonebook has info for ${count} people</p>` +
-    `<p>${currentTime}</p>`
-  )
+  Person.countDocuments({})
+    .then(count => {
+      const currentTime = new Date()
+      response.send(
+        `<p>Phonebook has info for ${count} people</p>` +
+        `<p>${currentTime}</p>`
+      )
+    })
+    .catch(err => {
+      console.error('Error counting persons:', err.message)
+      response.status(500).end()
+    })
 })
 
 // Delete a person by id
@@ -113,7 +120,8 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end()
 })
 
-const PORT = process.env.PORT || 3001 // Use environment variable PORT or default to 3001
+// Use the PORT environment variable
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
