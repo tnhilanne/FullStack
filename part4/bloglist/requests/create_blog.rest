@@ -1,0 +1,21 @@
+POST http://localhost:3003/api/blogs/
+Content-Type: application/json
+
+{
+  "title": "Not good blog",
+  "author": "Jari Jarinen ",
+  "url": "badrandomexampleblog123.com",
+  "likes": 1
+}
+
+###
+
+POST define deployed url later if needed
+Content-Type: application/json
+
+{
+  "title": "New blog",
+  "author": "Juha Juhanen",
+  "url": "randomexampleblog123.com",
+  "likes": 5
+}
