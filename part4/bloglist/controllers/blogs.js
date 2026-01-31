@@ -4,11 +4,11 @@ Event handlers of routes are referred to as controllers */
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 
-// GET all blogs
-blogsRouter.get('/', (request, response) => {
-  Blog.find({}).then(blogs => {
-    response.json(blogs)
-  })
+// GET all blogs with async/await
+blogsRouter.get('/', async (request, response) => {
+  const blogs = await Blog.find({})
+  //console.log(blogs)
+  response.json(blogs)
 })
 
 // POST a new blog
