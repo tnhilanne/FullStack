@@ -1,12 +1,12 @@
 POST http://localhost:3003/api/blogs/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWQiOiI2OTdlNWQyZTgzMjdiZDI3MjRkNWIyMjUiLCJpYXQiOjE3Njk4OTAwNTN9.gEVRP3AlnDzBh1w6CVVZCoiP45n1dKVuqAEFOuxGYQ8
 
 {
-  "title": "Average blog",
-  "author": "Kari Karinen ",
-  "url": "averagerandomexampleblog123.com",
-  "likes": 6,
-  "userId": "697e4d75eb71ec8fd5706ecb"
+  "title": "A horrible blog",
+  "author": "Antti Anttinen ",
+  "url": "https://worstblogeverrandomexampleblog123.com",
+  "likes": 329
 }
 
 ###

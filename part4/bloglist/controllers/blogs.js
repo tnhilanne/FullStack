@@ -4,6 +4,7 @@ Event handlers of routes are referred to as controllers */
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 // GET all blogs with async/await and populate user info
 blogsRouter.get('/', async (request, response) => {
@@ -13,14 +14,29 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
+// Helper function to extract token from Authorization header
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
+
 // POST a new blog
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
-  const user = await User.findById(body.userId)
+//const user = await User.findOne() // get any user for now, auth to be added later
+
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+  const user = await User.findById(decodedToken.id)
 
   if (!user) {
-    return response.status(400).json({ error: 'userId missing or not valid' })
+    return response.status(400).json({ error: 'no users in database' })
   }
   const blog = new Blog({
     title: body.title,
