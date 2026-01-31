@@ -2,10 +2,11 @@ POST http://localhost:3003/api/blogs/
 Content-Type: application/json
 
 {
-  "title": "Not good blog",
-  "author": "Jari Jarinen ",
-  "url": "badrandomexampleblog123.com",
-  "likes": 1
+  "title": "Average blog",
+  "author": "Kari Karinen ",
+  "url": "averagerandomexampleblog123.com",
+  "likes": 6,
+  "userId": "697e4d75eb71ec8fd5706ecb"
 }
 
 ###
