@@ -19,7 +19,7 @@ test('initial testing', () => {
   console.log('testing setup works')
 })
 
-test.only('correct amount of blogs are returned as json', async () => {
+test('correct amount of blogs are returned as json', async () => {
   const response = await api
     .get('/api/blogs')
     .expect(200)
@@ -27,6 +27,14 @@ test.only('correct amount of blogs are returned as json', async () => {
 
     // Verify that the number of blogs returned matches the initial blogs
   assert.strictEqual(response.body.length, helper.initialBlogs.length)
+})
+
+test.only('unique identifier of the blog posts is named id', async () => {
+  const response = await api.get('/api/blogs')
+  response.body.forEach((blog) => {
+    assert.strictEqual(blog._id, undefined)
+    assert.ok(blog.id)
+  })
 })
 
 after(async () => {
