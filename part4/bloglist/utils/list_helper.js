@@ -2,6 +2,9 @@ const dummy = (blogs) => {
 	return 1
 }
 
-module.exports = {
-	dummy
+// Calculate the total number of likes for an array of blog posts
+const totalLikes = (blogs) => {
+	return blogs.reduce((sum, blog) => sum + (blog.likes || 0), 0)
 }
+
+module.exports = { dummy, totalLikes}
