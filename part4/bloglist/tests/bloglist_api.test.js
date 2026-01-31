@@ -79,6 +79,21 @@ test('if likes property is missing, it defaults to zero', async () => {
   assert.strictEqual(response.body.likes, 0)
 })
 
+test.only('blog without title and url is not added', async () => {
+  const newBlog =   {
+    author: 'Author Notitleorurl',
+    likes: 77
+  }
+    await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+    // Verify that the number of blogs has not changed
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
