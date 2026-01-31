@@ -14,6 +14,12 @@ const initialBlogs = [
     author: "Uusi Uusinen",
     url: "https://testrandomexampleblog888.com",
     likes: 10
+  },
+  {
+    title: "Random test blog",
+    author: "Author Random",
+    url: "https://testrandomexampleblog777.com",
+    likes: 16
   }
 ]
 

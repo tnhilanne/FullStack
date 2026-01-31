@@ -79,7 +79,7 @@ test('if likes property is missing, it defaults to zero', async () => {
   assert.strictEqual(response.body.likes, 0)
 })
 
-test.only('blog without title and url is not added', async () => {
+test('blog without title and url is not added', async () => {
   const newBlog =   {
     author: 'Author Notitleorurl',
     likes: 77
@@ -94,6 +94,49 @@ test.only('blog without title and url is not added', async () => {
     assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
 })
 
+// Verify that a blog can be deleted by using 204 status code (successful request, no content returned)
+test('a blog is successfully deleted', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+    console.log('Deleting blog:', blogToDelete)
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+    const blogsAtEnd = await helper.blogsInDb()
+
+    const ids = blogsAtEnd.map(n => n.id)
+    assert(!ids.includes(blogToDelete.id))
+    // Verify that the number of blogs has decreased by one
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+})
+
+// Verify that a blog can be updated
+test.only('a blog is successfully updated', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[1]
+
+  // Prepare updated blog data 
+  const updatedBlogData = {
+    title: blogToUpdate.title + ' (updated)',
+    author: blogToUpdate.author + ' (updated)',
+    url: blogToUpdate.url + '/updated',
+    likes: blogToUpdate.likes + 1
+  }
+  const response = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlogData)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+  console.log('Updated blog response:', response.body)
+
+  // Verify that the blog data has been updated correctly
+  assert.strictEqual(response.body.likes, updatedBlogData.likes)
+  assert.strictEqual(response.body.title, updatedBlogData.title)
+  assert.strictEqual(response.body.author, updatedBlogData.author)
+  assert.strictEqual(response.body.url, updatedBlogData.url)
+  assert.strictEqual(response.body.id, blogToUpdate.id)
+  
+})
+
+// After testing, close the Mongoose database connection
 after(async () => {
   await mongoose.connection.close()
 })
