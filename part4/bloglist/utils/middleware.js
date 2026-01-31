@@ -11,6 +11,17 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
+// Middleware to extract token and attach to request.token
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    request.token = authorization.replace('Bearer ', '')
+  } else {
+    request.token = null
+  }
+  next()
+}
+
 // Middleware for handling unknown endpoints
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
@@ -37,4 +48,5 @@ module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
+  tokenExtractor,
 }
